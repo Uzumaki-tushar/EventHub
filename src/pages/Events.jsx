@@ -10,15 +10,33 @@ function Events() {
 
   const [events, setEvents] = useState([]);
   const [search, setSearch] = useState("");
+  const [categoryFilter, setCategoryFilter] = useState("All");
+  const [dateFilter, setDateFilter] = useState("");
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
 
   useEffect(() => {
-    fetchEvents();
-  }, []);
+    setPage(1);
+  }, [search, categoryFilter, dateFilter]);
+
+  useEffect(() => {
+    const delayFetch = setTimeout(() => {
+      fetchEvents();
+    }, 300);
+    return () => clearTimeout(delayFetch);
+  }, [page, search, categoryFilter, dateFilter]);
 
   const fetchEvents = async () => {
     try {
-      const res = await API.get("/events");
-      setEvents(res.data);
+      const query = `?page=${page}&limit=6&search=${search}&category=${categoryFilter}&date=${dateFilter}`;
+      const res = await API.get(`/events${query}`);
+      
+      if (page === 1) {
+        setEvents(res.data.events);
+      } else {
+        setEvents((prev) => [...prev, ...res.data.events]);
+      }
+      setTotalPages(res.data.totalPages);
     } catch (err) {
       console.log(err);
     }
@@ -123,31 +141,36 @@ function Events() {
 
 </div>
 
-        <input
-          type="text"
-          placeholder="🔍 Search Events..."
-          className="
-            w-full
-            p-4
-            rounded-2xl
-            bg-white/10
-            backdrop-blur-lg
-            border
-            border-white/20
-            text-white
-    placeholder-gray-300
-    mb-8
-    focus:outline-none
-    focus:ring-2
-    focus:ring-cyan-400
-  "
-          value={search}
-          onChange={(e) =>
-            setSearch(
-              e.target.value
-            )
-          }
-        />
+        <div className="flex flex-col md:flex-row gap-4 mb-8">
+          <input
+            type="text"
+            placeholder="🔍 Search Events..."
+            className="flex-1 p-4 rounded-2xl bg-white/10 backdrop-blur-lg border border-white/20 text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-cyan-400"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+
+          <select
+            className="p-4 rounded-2xl bg-white/10 backdrop-blur-lg border border-white/20 text-white focus:outline-none focus:ring-2 focus:ring-cyan-400"
+            value={categoryFilter}
+            onChange={(e) => setCategoryFilter(e.target.value)}
+          >
+            <option value="All" className="text-black">All Categories</option>
+            <option value="Tech" className="text-black">Tech</option>
+            <option value="Music" className="text-black">Music</option>
+            <option value="Sports" className="text-black">Sports</option>
+            <option value="Workshop" className="text-black">Workshop</option>
+            <option value="Other" className="text-black">Other</option>
+          </select>
+
+          <input
+            type="date"
+            className="p-4 rounded-2xl bg-white/10 backdrop-blur-lg border border-white/20 text-white focus:outline-none focus:ring-2 focus:ring-cyan-400"
+            value={dateFilter}
+            onChange={(e) => setDateFilter(e.target.value)}
+          />
+        </div>
+
         <div className="mb-6">
   <span className="bg-cyan-500 px-4 py-2 rounded-full font-semibold">
     {events.length} Events Available
@@ -155,25 +178,25 @@ function Events() {
 </div>
 
         <div className="grid lg:grid-cols-3 md:grid-cols-2 gap-8">
-
-          {events
-            .filter((event) =>
-              event.title
-                .toLowerCase()
-                .includes(
-                  search.toLowerCase()
-                )
-            )
-            .map((event) => (
-              <EventCard
-                key={event._id}
-                event={event}
-                onBook={bookEvent}
-                
-              />
-            ))}
-
+          {events.map((event) => (
+            <EventCard
+              key={event._id}
+              event={event}
+              onBook={bookEvent}
+            />
+          ))}
         </div>
+
+        {page < totalPages && (
+          <div className="text-center mt-12">
+            <button
+              onClick={() => setPage((prev) => prev + 1)}
+              className="bg-cyan-500 hover:bg-cyan-600 px-8 py-3 rounded-xl font-bold text-lg transition shadow-lg"
+            >
+              Load More
+            </button>
+          </div>
+        )}
 
       </div>
     </>

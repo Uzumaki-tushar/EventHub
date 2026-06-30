@@ -23,6 +23,8 @@ const bookingRoutes =
 const paymentRoutes =
   require("./routes/paymentRoutes");
 
+const reviewRoutes = require("./routes/reviewRoutes");
+
 const adminRoutes =
   require("./routes/adminRoutes");
 
@@ -34,6 +36,9 @@ connectDB();
 app.use(cors());
 
 app.use(express.json());
+
+const { apiLimiter } = require("./middleware/rateLimiter");
+app.use("/api", apiLimiter);
 
 app.use(
   "/api/auth",
@@ -58,6 +63,11 @@ app.use(
 app.use(
   "/api/payment",
   paymentRoutes
+);
+
+app.use(
+  "/api/reviews",
+  reviewRoutes
 );
 
 const path = require("path");

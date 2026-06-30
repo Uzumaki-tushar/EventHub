@@ -51,6 +51,15 @@ function Navbar() {
           My Bookings
         </Link>
 
+        {user && (
+          <Link
+            to="/profile"
+            className="hover:text-cyan-400 transition duration-300 font-medium"
+          >
+            Profile
+          </Link>
+        )}
+
         {user ? (
           <button
             onClick={handleLogout}

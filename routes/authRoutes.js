@@ -13,8 +13,14 @@ const User =
 const router =
   express.Router();
 
+const { authLimiter } = require("../middleware/rateLimiter");
+const validate = require("../middleware/validate");
+const { registerSchema, loginSchema } = require("../utils/validators");
+
 router.post(
   "/register",
+  authLimiter,
+  validate(registerSchema),
   async (req, res) => {
     const {
       name,
@@ -58,6 +64,8 @@ const adminMiddleware = require("../middleware/adminMiddleware");
 
 router.post(
   "/login",
+  authLimiter,
+  validate(loginSchema),
   async (req, res) => {
     const {
       email,
@@ -155,5 +163,19 @@ router.post(
     }
   }
 );
+
+router.put("/profile/:id", authMiddleware, async (req, res) => {
+  try {
+    const { name, bio, profilePicture } = req.body;
+    const updatedUser = await User.findByIdAndUpdate(
+      req.params.id,
+      { name, bio, profilePicture },
+      { new: true }
+    );
+    res.json(updatedUser);
+  } catch (err) {
+    res.status(500).json({ message: "Failed to update profile" });
+  }
+});
 
 module.exports = router;

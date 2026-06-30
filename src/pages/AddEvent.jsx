@@ -14,6 +14,7 @@ function AddEvent() {
       venue: "",
       price: "",
       seats: "",
+      category: "Other",
       image: "",
     });
 
@@ -41,6 +42,7 @@ function AddEvent() {
         venue: "",
         price: "",
         seats: "",
+        category: "Other",
         image: "",
       });
     } catch (err) {
@@ -144,6 +146,18 @@ function AddEvent() {
             })
           }
         />
+
+        <select
+          className="w-full p-4 rounded-xl bg-white/10 border border-white/20 text-white focus:outline-none focus:ring-2 focus:ring-cyan-400"
+          value={event.category}
+          onChange={(e) => setEvent({ ...event, category: e.target.value })}
+        >
+          <option value="Tech" className="text-black">Tech</option>
+          <option value="Music" className="text-black">Music</option>
+          <option value="Sports" className="text-black">Sports</option>
+          <option value="Workshop" className="text-black">Workshop</option>
+          <option value="Other" className="text-black">Other</option>
+        </select>
 
         <input
           placeholder="🖼 Image URL"

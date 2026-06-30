@@ -1,4 +1,33 @@
+import { useEffect, useState } from "react";
+import API from "../services/api";
+import toast from "react-hot-toast";
+
 function EventCard({ event, onBook }) {
+  const [rating, setRating] = useState(null);
+
+  useEffect(() => {
+    API.get(`/reviews/event/${event._id}`)
+      .then((res) => {
+        if (res.data.averageRating > 0) setRating(res.data.averageRating);
+      })
+      .catch((err) => console.log(err));
+  }, [event._id]);
+
+  const isFull = event.bookedSeats >= event.seats;
+
+  const handleWaitlist = async () => {
+    try {
+      const user = JSON.parse(localStorage.getItem("user"));
+      if (!user) {
+        toast.error("Please login first to join waitlist");
+        return;
+      }
+      await API.post(`/events/${event._id}/waitlist`, { userId: user._id });
+      toast.success("Successfully joined the waitlist!");
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Failed to join waitlist");
+    }
+  };
   return (
     <div
       className="
@@ -34,6 +63,12 @@ function EventCard({ event, onBook }) {
             month: "short",
           })}
         </div>
+
+        {rating && (
+          <div className="absolute top-3 right-3 bg-yellow-500/80 text-white text-xs px-3 py-1 rounded-full backdrop-blur-md font-bold">
+            ⭐ {rating}
+          </div>
+        )}
       </div>
 
       <div className="relative p-5 text-white">
@@ -50,24 +85,45 @@ function EventCard({ event, onBook }) {
           📍 {event.venue}
         </div>
 
-        <button
-          onClick={() => onBook(event)}
-          className="
-            w-full
-            mt-5
-            py-3
-            rounded-2xl
-            bg-gradient-to-r from-cyan-500 via-purple-600 to-pink-500
-            text-white font-bold
-            shadow-lg
-            hover:shadow-purple-500/50
-            hover:scale-[1.03]
-            active:scale-95
-            transition-all
-          "
-        >
-          🎟 Book Now
-        </button>
+        {isFull ? (
+          <button
+            onClick={handleWaitlist}
+            className="
+              w-full
+              mt-5
+              py-3
+              rounded-2xl
+              bg-gradient-to-r from-yellow-500 to-orange-500
+              text-white font-bold
+              shadow-lg
+              hover:shadow-orange-500/50
+              hover:scale-[1.03]
+              active:scale-95
+              transition-all
+            "
+          >
+            🕒 Join Waitlist
+          </button>
+        ) : (
+          <button
+            onClick={() => onBook(event)}
+            className="
+              w-full
+              mt-5
+              py-3
+              rounded-2xl
+              bg-gradient-to-r from-cyan-500 via-purple-600 to-pink-500
+              text-white font-bold
+              shadow-lg
+              hover:shadow-purple-500/50
+              hover:scale-[1.03]
+              active:scale-95
+              transition-all
+            "
+          >
+            🎟 Book Now
+          </button>
+        )}
       </div>
     </div>
   );

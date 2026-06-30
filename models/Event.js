@@ -14,6 +14,23 @@ const eventSchema =
 
     seats: Number,
 
+    bookedSeats: {
+      type: Number,
+      default: 0,
+    },
+
+    waitlist: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
+
+    category: {
+      type: String,
+      default: "Other",
+    },
+
     image: String,
   });
 
