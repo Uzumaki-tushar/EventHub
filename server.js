@@ -28,17 +28,19 @@ const reviewRoutes = require("./routes/reviewRoutes");
 const adminRoutes =
   require("./routes/adminRoutes");
 
+const redisClient = require("./config/redis");
 
 const app = express();
 
 connectDB();
+
+
 
 app.use(cors());
 
 app.use(express.json());
 
 const { apiLimiter } = require("./middleware/rateLimiter");
-app.use("/api", apiLimiter);
 
 app.use(
   "/api/auth",
@@ -47,26 +49,31 @@ app.use(
 
 app.use(
   "/api/events",
+  apiLimiter,
   eventRoutes
 );
 
 app.use(
   "/api/admin",
+  apiLimiter,
   adminRoutes
 );
 
 app.use(
   "/api/bookings",
+  apiLimiter,
   bookingRoutes
 );
 
 app.use(
   "/api/payment",
+  apiLimiter,
   paymentRoutes
 );
 
 app.use(
   "/api/reviews",
+  apiLimiter,
   reviewRoutes
 );
 

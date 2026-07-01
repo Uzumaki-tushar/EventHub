@@ -6,6 +6,7 @@ const Event =
 
 const validate = require("../middleware/validate");
 const { eventSchema } = require("../utils/validators");
+const { cache, clearCache } = require("../middleware/cache");
 
 const router =
   express.Router();
@@ -27,11 +28,12 @@ router.post(
         req.body
       );
 
+    await clearCache("events");
     res.json(event);
   }
 );
 
-router.get("/", async (req, res) => {
+router.get("/", cache("events"), async (req, res) => {
   try {
     const { page = 1, limit = 6, search = "", category = "All", date = "" } = req.query;
     const today = new Date();
@@ -69,6 +71,7 @@ router.get("/", async (req, res) => {
 
 router.get(
   "/:id",
+  cache("events"),
   async (req, res) => {
     const event =
       await Event.findById(
@@ -91,6 +94,7 @@ router.put(
         }
       );
 
+    await clearCache("events");
     res.json(updated);
   }
 );
@@ -102,6 +106,7 @@ router.delete(
       req.params.id
     );
 
+    await clearCache("events");
     res.json({
       message:
         "Event Deleted",
