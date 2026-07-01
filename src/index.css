@@ -2,6 +2,23 @@
 
 body {
   margin: 0;
-  background: #f5f7fb;
-  font-family: Arial, sans-serif;
+  background-color: #000000;
+  color: #ffffff;
+  font-family: 'Outfit', sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Custom scrollbar for premium feel */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #000000;
+}
+::-webkit-scrollbar-thumb {
+  background: #333333;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #555555;
 }

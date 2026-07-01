@@ -1,8 +1,9 @@
 import { useState } from "react";
 import API from "../services/api";
-import { useNavigate } from "react-router-dom";
-import { Link } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import toast from "react-hot-toast";
+import SEO from "../components/SEO";
+import { motion } from "framer-motion";
 
 function Register() {
   const navigate = useNavigate();
@@ -22,11 +23,7 @@ function Register() {
     }
 
     try {
-      await API.post(
-        "/auth/register",
-        form
-      );
-
+      await API.post("/auth/register", form);
       toast.success("🎉 Registration Successful!");
       navigate("/login");
     } catch (err) {
@@ -36,88 +33,67 @@ function Register() {
   };
 
   return (
-  <div className="min-h-screen bg-gradient-to-br from-blue-900 via-purple-900 to-pink-800 flex justify-center items-center px-4">
+    <>
+      <SEO title="Register" />
+      <div className="min-h-[90vh] flex justify-center items-center px-4 relative">
 
-    {/* Background Glow Effects */}
-    <div className="absolute top-20 left-20 w-72 h-72 bg-cyan-500 rounded-full blur-[120px] opacity-20"></div>
+        <motion.form
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          onSubmit={submitForm}
+          className="bg-[#111111] border border-white/10 p-10 rounded-[2.5rem] shadow-2xl w-full max-w-md text-white relative z-10"
+        >
+          <div className="text-center mb-8">
+            <div className="w-16 h-16 bg-gradient-to-tr from-[#D80032] to-[#800080] rounded-full flex items-center justify-center mx-auto mb-6 shadow-[0_0_15px_rgba(216,0,50,0.5)]">
+              <span className="font-bold text-3xl text-white">E</span>
+            </div>
+            <h2 className="text-3xl font-bold tracking-tight">Create Account</h2>
+            <p className="text-gray-400 mt-2 text-sm">Join EventHub Today</p>
+          </div>
 
-    <div className="absolute bottom-20 right-20 w-72 h-72 bg-pink-500 rounded-full blur-[120px] opacity-20"></div>
+          <div className="space-y-4 mb-6">
+            <input
+              className="w-full px-6 py-4 rounded-full bg-[#0a0a0a] border border-white/5 text-white placeholder-gray-500 focus:outline-none focus:border-[#D80032]/50 transition-colors"
+              placeholder="Full Name"
+              onChange={(e) => setForm({ ...form, name: e.target.value })}
+            />
 
-    <form
-      onSubmit={submitForm}
-      className="bg-white/10 backdrop-blur-lg border border-white/20 p-8 rounded-3xl shadow-2xl w-full max-w-md text-white"
-    >
-      <div className="text-center mb-8">
-        <h1 className="text-5xl mb-2">🎫</h1>
+            <input
+              type="email"
+              className="w-full px-6 py-4 rounded-full bg-[#0a0a0a] border border-white/5 text-white placeholder-gray-500 focus:outline-none focus:border-[#D80032]/50 transition-colors"
+              placeholder="Email Address"
+              onChange={(e) => setForm({ ...form, email: e.target.value })}
+            />
 
-        <h2 className="text-3xl font-bold">
-          Create Account
-        </h2>
+            <input
+              type="password"
+              className="w-full px-6 py-4 rounded-full bg-[#0a0a0a] border border-white/5 text-white placeholder-gray-500 focus:outline-none focus:border-[#D80032]/50 transition-colors"
+              placeholder="Password"
+              onChange={(e) => setForm({ ...form, password: e.target.value })}
+            />
+          </div>
 
-        <p className="text-gray-300 mt-2">
-          Join EventHub Today
-        </p>
+          <button
+            type="submit"
+            className="w-full py-4 rounded-full bg-[#D80032] text-white font-bold hover:bg-[#a60026] transition duration-300 shadow-[0_4px_14px_0_rgba(216,0,50,0.39)] hover:shadow-[0_6px_20px_rgba(216,0,50,0.23)] hover:-translate-y-0.5"
+          >
+            Create Account
+          </button>
+
+          <div className="text-center mt-8">
+            <p className="text-gray-400 text-sm">
+              Already have an account?{" "}
+              <Link to="/login" className="text-[#D80032] font-semibold hover:text-white transition-colors">
+                Sign in
+              </Link>
+            </p>
+          </div>
+
+        </motion.form>
       </div>
-
-      <input
-        className="w-full p-4 rounded-xl bg-white/10 border border-white/20 mb-4 text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-cyan-400"
-        placeholder="👤 Full Name"
-        onChange={(e) =>
-          setForm({
-            ...form,
-            name: e.target.value,
-          })
-        }
-      />
-
-      <input
-        type="email"
-        className="w-full p-4 rounded-xl bg-white/10 border border-white/20 mb-4 text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-cyan-400"
-        placeholder="📧 Email Address"
-        onChange={(e) =>
-          setForm({
-            ...form,
-            email: e.target.value,
-          })
-        }
-      />
-
-      <input
-        type="password"
-        className="w-full p-4 rounded-xl bg-white/10 border border-white/20 mb-6 text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-cyan-400"
-        placeholder="🔒 Password"
-        onChange={(e) =>
-          setForm({
-            ...form,
-            password: e.target.value,
-          })
-        }
-      />
-
-      <button
-        type="submit"
-        className="w-full py-4 rounded-xl bg-gradient-to-r from-cyan-500 to-purple-600 text-white font-bold hover:scale-105 transition duration-300 shadow-lg"
-      >
-        Create Account
-      </button>
-
-      <div className="text-center mt-6">
-        <p className="text-gray-300">
-          Already have an account?
-        </p>
-
-        <Link
-  to="/login"
-  className="text-cyan-400 font-semibold hover:text-cyan-300"
->
-  Login Here
-</Link>
-      </div>
-
-    </form>
-
-  </div>
-);
+    </>
+  );
 }
 
 export default Register;
