@@ -3,7 +3,7 @@ const RedisStore = require("rate-limit-redis").default || require("rate-limit-re
 const redisClient = require("../config/redis");
 
 const apiLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
+  windowMs: 5 * 60 * 1000, // 5 minutes
   max: 100, // Limit each IP to 100 requests per window
   standardHeaders: true,
   legacyHeaders: false,
@@ -21,8 +21,8 @@ const apiLimiter = rateLimit({
 });
 
 const authLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 10, // Limit each IP to 10 requests per window for auth (login/register)
+  windowMs: 5 * 60 * 1000, // 5 minutes
+  max: 100, // Limit each IP to 10 requests per window for auth (login/register)
   standardHeaders: true,
   legacyHeaders: false,
   store: new RedisStore({
